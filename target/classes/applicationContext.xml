@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"  
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"       
+	xmlns:p="http://www.springframework.org/schema/p"  
+	xmlns:context="http://www.springframework.org/schema/context"   
+	xmlns:tx="http://www.springframework.org/schema/tx"  
+	xmlns:aop="http://www.springframework.org/schema/aop"  
+	xsi:schemaLocation="http://www.springframework.org/schema/beans    
+	http://www.springframework.org/schema/beans/spring-beans.xsd    
+	http://www.springframework.org/schema/aop    
+	http://www.springframework.org/schema/aop/spring-aop.xsd    
+	http://www.springframework.org/schema/tx    
+	http://www.springframework.org/schema/tx/spring-tx.xsd    
+	http://www.springframework.org/schema/context    
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+ 	<!-- <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
+    </bean>
+    
+ 	先配置事务管理器，注意现在使用的是Hibernate框架，所以需要使用Hibernate框架的事务管理器
+ 	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+            <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+     * 开启注解事务
+     <tx:annotation-driven transaction-manager="transactionManager"/> -->
+     
+	<!-- 支持注解 -->
+	<context:annotation-config></context:annotation-config>
+  
+  	<!-- 事物注解 -->
+  	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
+  	
+  	<context:property-placeholder location="classpath:jdbc.properties"/>
+     
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+     	<!-- 旧版本方式设置c3p0
+            <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+            <property name="jdbcUrl" value="jdbc:mysql:///proTest0"/>
+            <property name="user" value="root"/>
+            <property name="password" value="root"/>
+             -->
+             
+		<!-- 数据库连接相关信息 -->
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="driverClass" value="${jdbc.driverClass}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+	</bean>
+        
+        
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource" />
+        <!-- 配置其他的属性 -->
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        <!-- 配置映射 -->
+        <property name="mappingResources">
+            <list>
+                <value>com/qmy3/Test/domain/Customer.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+        
+        <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+            <property name="sessionFactory" ref="sessionFactory"/>
+        </bean>
+
+	
+	 <bean id="ctmDao" class="com.qmy3.Test.Dao.CustomerDaoImp">
+		<property name="sessionFactory" ref="sessionFactory"/>
+ 	</bean>
+	
+	<bean id="helloService" class="com.qmy3.Test.Service.HelloServiceImp">
+		<property name="ctmDao" ref="ctmDao"></property>
+	</bean>
+
+	
+	<bean id="ctmAction" class="com.qmy3.Test.Action.CustomerActionImp" scope="prototype">
+		<property name="helloService" ref="helloService"></property>
+	</bean>
+ 
+
+
+</beans>
+	

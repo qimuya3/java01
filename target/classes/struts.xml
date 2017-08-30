@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.devMode" value="false" />
+
+	<package name="default" namespace="/" extends="struts-default">
+		<action name="he_*" class="helloAction" method="{1}">
+			<result>/success.jsp</result>
+		</action>
+
+		<action name="ctm_*" class="ctmAction" method="{1}">
+			<result name="hello">/helloSay.jsp</result>
+			<result name="success">/success.jsp</result>
+		</action>
+	</package>
+
+
+</struts>
